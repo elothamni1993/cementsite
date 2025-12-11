@@ -1,0 +1,263 @@
+{% extends "base.html" %}
+{% block title %}{% if view.object %}Edit Article{% else %}New Article{% endif %}{% endblock %}
+
+{% block extra_css %}
+<style>
+  .layout { display:grid; gap:1rem; grid-template-columns: 1fr; }
+  @media(min-width:1000px){ .layout { grid-template-columns: 2fr 1fr; } }
+
+  .card {
+    background:#fff; border:1px solid #e5e7eb; border-radius:14px;
+    padding:1rem; box-shadow:0 10px 30px rgba(31,41,55,.06);
+  }
+  .card h2 { margin:.2rem 0 .8rem; font-size:1.1rem; }
+  .muted { color:#6b7280; }
+  .note { background:#f8fafc; border:1px dashed #cbd5e1; padding:.7rem .9rem; border-radius:10px; margin:.6rem 0 0; }
+
+  form p { margin:.7rem 0; }
+  form label { display:block; font-weight:600; color:#374151; margin-bottom:.25rem; }
+  form input[type="text"], form textarea, form select {
+    width:100%; padding:.6rem .7rem; border:1px solid #e5e7eb; border-radius:10px;
+  }
+
+  .actions { display:flex; gap:.6rem; align-items:center; margin-top:.8rem; flex-wrap:wrap; }
+  .btn { display:inline-block; padding:.7rem 1rem; border-radius:10px; text-decoration:none; font-weight:700; }
+  .btn-primary { background:#111827; color:#fff; }
+  .btn-ghost { background:#fff; color:#111827; border:1px solid #e5e7eb; }
+  .btn-danger { background:#b91c1c; color:#fff; }
+
+  /* Attachments */
+  .dropzone {
+    border:2px dashed #cbd5e1; border-radius:14px; padding:1rem; background:#f8fafc;
+    text-align:center; transition: all .15s ease;
+  }
+  .dropzone.dragover { background:#ecfeff; border-color:#67e8f9; }
+  .att-list { display:grid; gap:.6rem; margin-top:.8rem; }
+  .att-item {
+    display:grid; grid-template-columns: 1fr auto; gap:.6rem; align-items:center;
+    border:1px solid #e5e7eb; border-radius:10px; padding:.5rem .6rem; background:#fff;
+  }
+  .att-item .file-thumb { display:flex; gap:.6rem; align-items:center; }
+  .att-item .file-thumb img {
+    width:48px; height:48px; object-fit:cover; border-radius:8px; border:1px solid #e5e7eb;
+    background:#f9fafb;
+  }
+  .att-item .file-meta { font-size:.85rem; color:#6b7280; }
+  .att-item input[type="text"] { max-width:360px; }
+  .att-empty { text-align:center; color:#6b7280; border:1px dashed #e5e7eb; border-radius:10px; padding:.7rem; }
+
+  .mg-top { margin-top: .8rem; }
+</style>
+{% endblock %}
+
+{% block content %}
+<h1 style="margin-bottom:.6rem;">{% if view.object %}Edit{% else %}New{% endif %} Article</h1>
+
+{# ONE SINGLE FORM wraps both columns so article + attachments submit together #}
+<form id="article-form" method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  {{ form.media }}
+
+  <div class="layout">
+    <!-- Col 1: Article fields -->
+    <div class="card">
+      {{ form.as_p }}
+
+      {% if not request.user.is_staff %}
+      <div class="note">
+        <p class="muted">Note : les articles des utilisateurs non-staff sont enregistrés en <strong>brouillon</strong>. Un admin publiera après revue.</p>
+      </div>
+      {% endif %}
+
+      <div class="actions">
+        <button class="btn btn-primary" id="saveBtn" type="submit">Save</button>
+        <a class="btn btn-ghost" href="{% url 'my_articles' %}">Cancel</a>
+        <span class="muted" id="statusText"></span>
+      </div>
+    </div>
+
+    <!-- Col 2: Attachments (inside the same form) -->
+    <div class="card">
+      <h2>Attachments</h2>
+
+      {{ att_formset.management_form }}
+      <div id="attContainer" class="att-list">
+        {% for f in att_formset.forms %}
+          <div class="att-item">
+            <div class="file-thumb">
+              <img alt="Attachment">
+              <div>
+                {{ f.id }}       {# important for existing rows #}
+                {{ f.file }}
+                {{ f.title }}
+                {% if f.instance.file %}
+                  <div class="file-meta">{{ f.instance.file.name }}</div>
+                {% endif %}
+              </div>
+            </div>
+            <div>
+              {% if att_formset.can_delete %}{{ f.DELETE }} <label class="muted">Delete</label>{% endif %}
+            </div>
+          </div>
+        {% empty %}
+          <div class="att-empty">Aucune pièce jointe.</div>
+        {% endfor %}
+      </div>
+
+      <!-- Prototype using empty_form; __prefix__ will be replaced in JS -->
+      <template id="attProto">
+        <div class="att-item">
+          <div class="file-thumb">
+            <img alt="New">
+            <div>
+              {{ att_formset.empty_form.id }}
+              {{ att_formset.empty_form.file }}
+              {{ att_formset.empty_form.title }}
+            </div>
+          </div>
+          <div></div>
+        </div>
+      </template>
+
+      <div id="dropzone" class="dropzone mg-top">
+        <p class="muted">
+          Glissez vos fichiers ici ou
+          <button type="button" class="btn btn-ghost" id="pickBtn">choisir des fichiers</button>.
+        </p>
+        <input id="hiddenPicker" type="file" multiple style="display:none;">
+      </div>
+    </div>
+  </div>
+</form>
+
+{# Separate delete form OUTSIDE the edit form (no nesting) #}
+{% if view.object and request.user.is_staff %}
+  <form method="post" action="{% url 'article_delete_public' view.object.slug %}" onsubmit="return confirm('Delete this article?');" style="margin-top:.8rem;">
+    {% csrf_token %}
+    <button class="btn btn-danger" type="submit">Delete</button>
+  </form>
+{% elif view.object and view.object.author_id == request.user.id %}
+  <form method="post" action="{% url 'article_delete_public' view.object.slug %}" onsubmit="return confirm('Delete this article?');" style="margin-top:.8rem;">
+    {% csrf_token %}
+    <button class="btn btn-danger" type="submit">Delete</button>
+  </form>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function(){
+  // ===== Unsaved changes + save button guard =====
+  var form = document.getElementById("article-form");
+  var saveBtn = document.getElementById("saveBtn");
+  var statusText = document.getElementById("statusText");
+  var dirty = false;
+
+  form.addEventListener("input", function(){ dirty = true; });
+  window.addEventListener("beforeunload", function(e){
+    if (dirty) { e.preventDefault(); e.returnValue = ""; return ""; }
+  });
+  form.addEventListener("submit", function(){
+    dirty = false;
+    if (saveBtn) { saveBtn.disabled = true; statusText && (statusText.textContent = "Saving…"); }
+  });
+
+  // ===== Attachments: dynamic add via dropzone / picker using empty_form (__prefix__) =====
+  var drop = document.getElementById("dropzone");
+  var pickBtn = document.getElementById("pickBtn");
+  var hiddenPicker = document.getElementById("hiddenPicker");
+  var container = document.getElementById("attContainer");
+  var protoTpl = document.getElementById("attProto");
+  var mgmtTotal = document.querySelector('input[name$="-TOTAL_FORMS"]');
+  var mgmtMax   = document.querySelector('input[name$="-MAX_NUM_FORMS"]');
+
+  // Replace all occurrences of __prefix__ in an element subtree
+  function replacePrefix(root, index){
+    var walker = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT, null);
+    do {
+      var el = walker.currentNode;
+      // name/id/for attributes
+      ["name","id","for"].forEach(function(attr){
+        if (el.hasAttribute && el.hasAttribute(attr)) {
+          el.setAttribute(attr, el.getAttribute(attr).replace(/__prefix__/g, String(index)));
+        }
+      });
+    } while (walker.nextNode());
+  }
+
+  function nextIndex(){ return parseInt(mgmtTotal.value, 10); }
+  function canAddMore(){
+    var max = mgmtMax ? parseInt(mgmtMax.value || "1000", 10) : 1000;
+    return nextIndex() < max;
+  }
+
+  function addEmptyRows(count){
+    for (var i=0; i<count; i++){
+      if (!canAddMore()) break;
+      var idx = nextIndex();
+      var frag = protoTpl.content.cloneNode(true);
+      replacePrefix(frag, idx);
+      container.appendChild(frag);
+      mgmtTotal.value = idx + 1;
+    }
+  }
+
+  // Drag & drop visuals
+  if (drop){
+    drop.addEventListener("dragover", function(e){ e.preventDefault(); drop.classList.add("dragover"); });
+    drop.addEventListener("dragleave", function(){ drop.classList.remove("dragover"); });
+    drop.addEventListener("drop", function(e){
+      e.preventDefault(); drop.classList.remove("dragover");
+      // We can’t assign File objects to inputs programmatically.
+      // Create empty rows then ask user to pick files.
+      addEmptyRows(e.dataTransfer.files.length || 1);
+      hiddenPicker.click();
+    });
+  }
+
+  if (pickBtn){
+    pickBtn.addEventListener("click", function(){ hiddenPicker.click(); });
+  }
+
+  if (hiddenPicker){
+    hiddenPicker.addEventListener("change", function(){
+      var files = Array.from(this.files || []);
+      if (!files.length) return;
+
+      // Ensure enough empty rows exist
+      addEmptyRows(files.length);
+
+      // Fill newly created file inputs in order by asking the user to select into each row.
+      // (Direct assignment is blocked by the browser; here we just set placeholders/previews.)
+      var allRows = container.querySelectorAll('.att-item');
+      var start = allRows.length - files.length;
+      files.forEach(function(file, i){
+        var row = allRows[start + i];
+        if (!row) return;
+        var nameField = row.querySelector('input[type="text"]');
+        if (nameField && !nameField.value) nameField.placeholder = file.name;
+
+        // Preview if image
+        if (/^image\//.test(file.type)) {
+          var img = row.querySelector('img');
+          var reader = new FileReader();
+          reader.onload = function(e){ if (img) img.src = e.target.result; };
+          reader.readAsDataURL(file);
+        }
+      });
+
+      // Clear picker for next time
+      this.value = "";
+    });
+  }
+
+  // Ctrl/Cmd+S -> submit
+  document.addEventListener("keydown", function(e){
+    if ((e.ctrlKey || e.metaKey) && (e.key === "s" || e.key === "S")) {
+      e.preventDefault();
+      if (saveBtn && !saveBtn.disabled) saveBtn.click();
+    }
+  });
+})();
+</script>
+{% endblock %}

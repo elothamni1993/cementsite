@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<section class="container" style="max-width:700px;margin:2rem auto;">
+  <h1 style="text-align:center;">Welcome to your Dashboard</h1>
+  <p style="text-align:center; color:#4b5563;">This is your account dashboard. Here you can manage your subscription, view your articles, and access premium content.</p>
+  <div style="margin-top:2rem;">
+    <!-- Add dashboard widgets or links here -->
+    <ul style="list-style:none;padding:0;text-align:center;">
+      <li><a href="/premium/" class="btn btn-primary" style="margin:.5rem;">Access Premium Content</a></li>
+      <li><a href="/blog/" class="btn btn-ghost" style="margin:.5rem;">Read Free Articles</a></li>
+      <li><a href="/pricing/" class="btn btn-ghost" style="margin:.5rem;">Manage Subscription</a></li>
+    </ul>
+  </div>
+</section>
+{% endblock %}

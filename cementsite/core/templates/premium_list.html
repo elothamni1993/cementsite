@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Premium Library{% endblock %}
+{% block content %}
+<h1>Premium Library</h1>
+<ul>
+  {% for a in articles %}
+    <li><a href="{% url 'article_detail' a.slug %}">{{ a.title }}</a> ({{ a.access_level|title }})</li>
+  {% empty %}
+    <li>No premium content yet.</li>
+  {% endfor %}
+</ul>
+{% endblock %}

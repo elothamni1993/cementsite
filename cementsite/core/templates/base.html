@@ -1,0 +1,98 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>{% block title %}Cement Pro{% endblock %}</title>
+
+  {% block adsense_head %}
+  {% if ADSENSE_CLIENT %}
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client={{ ADSENSE_CLIENT }}" crossorigin="anonymous"></script>
+  {% endif %}
+  {% endblock %}
+
+  <link rel="stylesheet" href="{% static 'site.css' %}"/>
+
+  {% block extra_css %}
+  <style>
+    .flash { margin:.6rem 0; }
+    .flash-item { background:#ecfdf5; border:1px solid #a7f3d0; color:#065f46; padding:.5rem .7rem; border-radius:10px; }
+  </style>
+  {% endblock %}
+</head>
+<body>
+  <!-- Site Header -->
+  <header class="site-header">
+    <div class="nav-wrap">
+      <a class="brand" href="{% url 'home' %}">
+        <span class="brand-logo"></span>
+        <span class="brand-text">Cement <strong>Expert</strong></span>
+      </a>
+
+      <button class="burger" aria-label="Toggle menu" aria-expanded="false" aria-controls="nav-menu">
+        <span class="burger-line"></span><span class="burger-line"></span><span class="burger-line"></span>
+      </button>
+
+      <nav id="nav-menu" class="nav">
+        <a href="{% url 'home' %}" class="nav-link">Home</a>
+        <a href="{% url 'blog_list' %}" class="nav-link">Articles</a>
+        <a href="{% url 'premium_list' %}" class="nav-link">Premium</a>
+        <a href="{% url 'pricing' %}" class="nav-link">Pricing</a>
+
+        {% if user.is_authenticated %}
+          <a href="{% url 'my_articles' %}" class="nav-link">My Articles</a>
+          {% if user.is_staff %}
+            <a href="/admin/" class="nav-link">Admin</a>
+          {% endif %}
+          <span class="nav-user">Hi {{ user.username }}</span>
+
+          {# Hide "Get Pro" if already Premium (needs core.context.user_tier) #}
+          {% if USER_TIER != "Premium" %}
+            <a href="{% url 'pricing' %}" class="btn-pro">Get Pro</a>
+          {% endif %}
+          <a href="{% url 'logout' %}" class="nav-link">Logout</a>
+        {% else %}
+          <a href="{% url 'login' %}" class="nav-link">Login</a>
+          <a href="{% url 'signup' %}" class="btn-pro" style="margin-left:.5rem;">Create Account</a>
+        {% endif %}
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    {% if messages %}
+      <div class="flash">
+        {% for m in messages %}<div class="flash-item">{{ m }}</div>{% endfor %}
+      </div>
+    {% endif %}
+
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div>© {% now "Y" %} Cement Pro — Practical tools &amp; case studies for cement plants.</div>
+      <div class="footer-links">
+        <a href="{% url 'blog_list' %}">Blog</a>
+        <a href="{% url 'pricing' %}">Pricing</a>
+        <a href="mailto:contact@example.com">Contact</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    (function() {
+      var btn = document.querySelector('.burger');
+      var nav = document.getElementById('nav-menu');
+      if (!btn || !nav) return;
+      btn.addEventListener('click', function() {
+        var open = nav.classList.toggle('open');
+        btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      });
+    })();
+  </script>
+
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}{{ view.object|default:'New' }} Article{% endblock %}
+{% block content %}
+<h1>{% if view.object %}Edit{% else %}New{% endif %} Article</h1>
+<form method="post" class="card">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button class="btn btn-primary" type="submit">Save</button>
+</form>
+{% endblock %}

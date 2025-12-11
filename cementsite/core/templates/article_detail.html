@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}{{ article.title }}{% endblock %}
+{% block content %}
+<h1>{{ article.title }}</h1>
+<p><em>{{ article.created_at|date:"Y-m-d" }}</em></p>
+
+{% if article.access_level == 'free' and ADSENSE_CLIENT %}
+<div class="my-6">
+  <ins class="adsbygoogle" style="display:block" data-ad-client="{{ ADSENSE_CLIENT }}"
+       data-ad-slot="1234567890" data-ad-format="in-article" data-full-width-responsive="true"></ins>
+  <script>(adsbygoogle=window.adsbygoogle||[]).push({});</script>
+</div>
+{% endif %}
+
+<article>{{ article.body|safe }}</article>
+
+{% if article.access_level != 'free' %}
+<hr/>
+<p>This is premium content. <a href="{% url 'pricing' %}">See plans</a>.</p>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% block title %}Cement Pro – Industrial Know-How for Cement Plants{% endblock %}
+
+{% block content %}
+<section class="hero" style="background: radial-gradient(1200px 500px at 10% -10%, #e0e7ff 0%, transparent 60%), radial-gradient(900px 400px at 110% 20%, #dcfce7 0%, transparent 60%), linear-gradient(180deg, #ffffff 0%, #f8fafc 100%); border-radius: 18px; box-shadow: 0 10px 30px rgba(31,41,55,0.12); padding: 2.6rem 2rem; text-align:center; position:relative; overflow:hidden;">
+  <h1 style="font-size:2.2rem; font-weight:700; margin-bottom:.5rem; display:flex; align-items:center; justify-content:center; gap:.7rem;">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 32 32" style="width:2.2rem;height:2.2rem;"><circle cx="16" cy="16" r="16" fill="#6366f1"/><path d="M10 16h12M16 10v12" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
+    Knowledge, calculators &amp; <em>real case studies</em> for cement plants
+  </h1>
+  <p class="lead" style="color:#4b5563; font-size:1.15rem; margin-bottom:1.2rem;">
+    Cement Pro is a practical library for process technicians and engineers: step-by-step mill audits,
+    ΔP &amp; airflow tools, separator efficiency, energy (kWh/t) reduction, safety checklists,
+    and premium case studies from the field.
+  </p>
+  <div class="badges" style="display:flex; flex-wrap:wrap; gap:.6rem; justify-content:center; margin-bottom:1rem;">
+    <span class="badge" style="display:flex;align-items:center;gap:.3rem;background:#eef2ff;color:#3730a3;border:1px solid #c7d2fe;padding:.28rem .55rem;border-radius:999px;font-size:.78rem;font-weight:600;">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20" style="width:1em;height:1em;"><path fill="#6366f1" d="M10 2a8 8 0 100 16 8 8 0 000-16zm1 12H9v-2h2v2zm0-4H9V7h2v3z"/></svg> Cement process
+    </span>
+    <span class="badge" style="display:flex;align-items:center;gap:.3rem;background:#eef2ff;color:#3730a3;border:1px solid #c7d2fe;padding:.28rem .55rem;border-radius:999px;font-size:.78rem;font-weight:600;">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20" style="width:1em;height:1em;"><rect x="4" y="4" width="12" height="12" rx="3" fill="#22d3ee"/><path d="M8 8h4v4H8V8z" fill="#fff"/></svg> Mill optimization
+    </span>
+    <span class="badge" style="display:flex;align-items:center;gap:.3rem;background:#eef2ff;color:#3730a3;border:1px solid #c7d2fe;padding:.28rem .55rem;border-radius:999px;font-size:.78rem;font-weight:600;">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20" style="width:1em;height:1em;"><circle cx="10" cy="10" r="8" fill="#dcfce7"/><path d="M10 6v4l3 3" stroke="#22d3ee" stroke-width="2" stroke-linecap="round"/></svg> Separator & ΔP
+    </span>
+    <span class="badge" style="display:flex;align-items:center;gap:.3rem;background:#eef2ff;color:#3730a3;border:1px solid #c7d2fe;padding:.28rem .55rem;border-radius:999px;font-size:.78rem;font-weight:600;">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20" style="width:1em;height:1em;"><path fill="#facc15" d="M10 2l2.39 6.94H19l-5.2 3.78L15.6 19 10 14.54 4.4 19l1.2-6.28L0 8.94h6.61z"/></svg> Energy savings
+    </span>
+    <span class="badge" style="display:flex;align-items:center;gap:.3rem;background:#eef2ff;color:#3730a3;border:1px solid #c7d2fe;padding:.28rem .55rem;border-radius:999px;font-size:.78rem;font-weight:600;">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20" style="width:1em;height:1em;"><rect x="2" y="2" width="16" height="16" rx="8" fill="#f87171"/><path d="M10 7v3l2 2" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg> Safety & QA
+    </span>
+  </div>
+  <div class="cta-row" style="display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap;">
+    <a href="{% url 'pricing' %}" class="btn btn-primary">Unlock Premium</a>
+    <a href="{% url 'blog_list' %}" class="btn btn-ghost">Read Free Articles</a>
+  </div>
+</section>
+
+<section class="values">
+  <div class="value">
+    <h4><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20" style="width:1em;height:1em;vertical-align:middle;margin-right:.3em;"><rect x="2" y="2" width="16" height="16" rx="8" fill="#6366f1"/><path d="M10 6v4l3 3" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg> Hands-on Guides</h4>
+    <p>From false-air detection to separator selectivity—clear, actionable procedures.</p>
+  </div>
+  <div class="value">
+    <h4><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20" style="width:1em;height:1em;vertical-align:middle;margin-right:.3em;"><rect x="4" y="4" width="12" height="12" rx="3" fill="#22d3ee"/><path d="M8 8h4v4H8V8z" fill="#fff"/></svg> Built-in Tools</h4>
+    <p>Airflow &amp; ΔP calculators, separator load, and kWh/t estimators to speed decisions.</p>
+  </div>
+  <div class="value">
+    <h4><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20" style="width:1em;height:1em;vertical-align:middle;margin-right:.3em;"><circle cx="10" cy="10" r="8" fill="#dcfce7"/><path d="M10 6v4l3 3" stroke="#22d3ee" stroke-width="2" stroke-linecap="round"/></svg> Real Case Studies</h4>
+    <p>Before/after data from actual shifts, with tuned parameters and results.</p>
+  </div>
+  <div class="value">
+    <h4><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20" style="width:1em;height:1em;vertical-align:middle;margin-right:.3em;"><rect x="2" y="2" width="16" height="16" rx="8" fill="#facc15"/><path d="M10 7v3l2 2" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg> Pro Member Library</h4>
+    <p>Downloadable PDFs, Excel templates, and deep-dive troubleshooting packs.</p>
+  </div>
+</section>
+
+<section class="section">
+  <h2>📘 Latest Free Articles</h2>
+  {% if free %}
+    <div class="grid">
+      {% for a in free %}
+      <article class="card">
+        <h3><a href="{% url 'article_detail' a.slug %}">{{ a.title }}</a></h3>
+        {% if a.excerpt %}<p class="muted">{{ a.excerpt }}</p>{% endif %}
+      </article>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="muted">No free articles yet — new content is published weekly.</p>
+  {% endif %}
+</section>
+
+<section class="section">
+  <h2>🔒 Premium Teasers</h2>
+  {% if pro_teasers %}
+    <div class="grid">
+      {% for a in pro_teasers %}
+      <article class="card locked">
+        <h3>{{ a.title }}</h3>
+        {% if a.excerpt %}<p class="muted">{{ a.excerpt }}</p>{% endif %}
+        <a class="btn btn-primary" href="{% url 'pricing' %}">Unlock</a>
+      </article>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="muted">Premium case studies, templates, and calculators will appear here.</p>
+  {% endif %}
+</section>
+
+<section class="section cta-bottom">
+  <h2>⚡ Ready to reduce kWh/t and stabilize quality?</h2>
+  <p class="muted">
+    Join Cement Pro and access field-tested methods, calculators, and case studies to improve throughput,
+    cut energy, and standardize best practices across shifts.
+  </p>
+  <div class="cta-row">
+    <a href="{% url 'pricing' %}" class="btn btn-primary">See Plans</a>
+    <a href="{% url 'blog_list' %}" class="btn btn-ghost">Browse Free Articles</a>
+  </div>
+</section>
+{% endblock %}

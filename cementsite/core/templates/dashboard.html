@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<h1>Welcome, {{ user.username }}</h1>
+<p>Your plan: <strong>{{ tier }}</strong>
+  {% if expires %}(renews {{ expires|date:"Y-m-d H:i" }}){% endif %}
+</p>
+
+{% if tier != "Premium" %}
+  <p><a class="btn btn-primary" href="{% url 'pricing' %}">Upgrade to Premium</a></p>
+{% endif %}
+
+<h2>Recent content</h2>
+<ul>
+  {% for a in recent %}
+    <li><a href="{% url 'article_detail' a.slug %}">{{ a.title }}</a></li>
+  {% empty %}
+    <li>No content yet.</li>
+  {% endfor %}
+</ul>
+{% endblock %}
