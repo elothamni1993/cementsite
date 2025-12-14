@@ -39,6 +39,12 @@ class VisitorTrackingMiddleware(MiddlewareMixin):
             # Parse traffic source from referer
             traffic_source = self._parse_traffic_source(referer, request.get_host())
             
+            # Get location from IP
+            country, city = self._get_location(ip)
+            
+            # Parse device info from user agent
+            device_type, browser, os = self._parse_user_agent(ua)
+            
             # Create visit record
             Visit.objects.create(
                 path=path,
@@ -51,6 +57,11 @@ class VisitorTrackingMiddleware(MiddlewareMixin):
                 time_spent=time_spent,
                 clicked_premium=clicked_premium,
                 traffic_source=traffic_source,
+                country=country,
+                city=city,
+                device_type=device_type,
+                browser=browser,
+                os=os,
             )
             
             # Store current time for next request
@@ -89,3 +100,72 @@ class VisitorTrackingMiddleware(MiddlewareMixin):
             return domain[:50]
         except Exception:
             return "unknown"
+    
+    def _get_location(self, ip):
+        """Get country and city from IP address using geoip2"""
+        try:
+            import geoip2.database
+            import os
+            from django.conf import settings
+            
+            # Path to GeoLite2 database
+            db_path = getattr(settings, 'GEOIP_PATH', None)
+            if not db_path:
+                return "", ""
+            
+            city_db = os.path.join(db_path, 'GeoLite2-City.mmdb')
+            if not os.path.exists(city_db):
+                return "", ""
+            
+            with geoip2.database.Reader(city_db) as reader:
+                response = reader.city(ip)
+                country = response.country.name or ""
+                city = response.city.name or ""
+                return country, city
+        except Exception:
+            # If geolocation fails, return empty strings
+            return "", ""
+    
+    def _parse_user_agent(self, user_agent):
+        """Parse device type, browser, and OS from user agent string"""
+        ua_lower = user_agent.lower()
+        
+        # Device type detection
+        if any(x in ua_lower for x in ['mobile', 'android', 'iphone', 'ipod', 'blackberry', 'windows phone']):
+            device_type = "mobile"
+        elif any(x in ua_lower for x in ['ipad', 'tablet', 'kindle']):
+            device_type = "tablet"
+        else:
+            device_type = "desktop"
+        
+        # Browser detection
+        if 'edg' in ua_lower:
+            browser = "Edge"
+        elif 'chrome' in ua_lower and 'edg' not in ua_lower:
+            browser = "Chrome"
+        elif 'safari' in ua_lower and 'chrome' not in ua_lower:
+            browser = "Safari"
+        elif 'firefox' in ua_lower:
+            browser = "Firefox"
+        elif 'opera' in ua_lower or 'opr' in ua_lower:
+            browser = "Opera"
+        elif 'msie' in ua_lower or 'trident' in ua_lower:
+            browser = "IE"
+        else:
+            browser = "Other"
+        
+        # OS detection
+        if 'windows' in ua_lower:
+            os_name = "Windows"
+        elif 'mac os' in ua_lower or 'macos' in ua_lower:
+            os_name = "macOS"
+        elif 'iphone' in ua_lower or 'ipad' in ua_lower:
+            os_name = "iOS"
+        elif 'android' in ua_lower:
+            os_name = "Android"
+        elif 'linux' in ua_lower:
+            os_name = "Linux"
+        else:
+            os_name = "Other"
+        
+        return device_type, browser, os_name

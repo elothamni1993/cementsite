@@ -93,12 +93,21 @@ class Visit(models.Model):
     time_spent = models.IntegerField(default=0, help_text="Seconds spent on previous page")
     clicked_premium = models.BooleanField(default=False)
     traffic_source = models.CharField(max_length=100, blank=True, help_text="google, direct, facebook, etc.")
+    
+    # Location and device info
+    country = models.CharField(max_length=100, blank=True)
+    city = models.CharField(max_length=100, blank=True)
+    device_type = models.CharField(max_length=20, blank=True, help_text="mobile, tablet, desktop")
+    browser = models.CharField(max_length=50, blank=True)
+    os = models.CharField(max_length=50, blank=True)
 
     class Meta:
         ordering = ['-created_at']
         indexes = [
             models.Index(fields=['created_at']),
             models.Index(fields=['session_key', 'created_at']),
+            models.Index(fields=['country']),
+            models.Index(fields=['device_type']),
         ]
 
     def __str__(self):
