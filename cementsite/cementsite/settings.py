@@ -55,12 +55,26 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "cementsite.wsgi.application"
 
+# Database: default to SQLite; switch to DATABASE_URL if provided
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": BASE_DIR / "db.sqlite3",
     }
 }
+
+_db_url = os.environ.get("DATABASE_URL")
+if _db_url:
+    try:
+        import dj_database_url
+        DATABASES["default"] = dj_database_url.parse(
+            _db_url,
+            conn_max_age=600,
+            ssl_require=True,
+        )
+    except Exception:
+        # Fall back to SQLite if parsing fails
+        pass
 
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",},
