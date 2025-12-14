@@ -4,3 +4,8 @@ whitenoise
 dj-database-url
 psycopg2-binary
 python-dotenv
+django-ckeditor
+Pillow
+boto3
+django-storages 
+djangorestframework
