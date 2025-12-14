@@ -79,6 +79,17 @@ class Article(models.Model):
         return self.title
 
 
+class Visit(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True)
+    path = models.CharField(max_length=512)
+    ip = models.GenericIPAddressField(null=True, blank=True)
+    user_agent = models.CharField(max_length=512, blank=True)
+    referer = models.CharField(max_length=512, blank=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL)
+
+    def __str__(self):
+        return f"{self.ip} {self.path} {self.created_at:%Y-%m-%d %H:%M}"
+
 class Attachment(models.Model):
     article = models.ForeignKey(Article, on_delete=models.CASCADE, related_name="attachments")
     title = models.CharField(max_length=200, blank=True)

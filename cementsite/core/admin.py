@@ -1,5 +1,6 @@
 from django.contrib import admin
 from .models import Plan, Subscription, Article
+from .models import Visit
 
 @admin.register(Plan)
 class PlanAdmin(admin.ModelAdmin):
@@ -31,3 +32,8 @@ class ArticleAdmin(admin.ModelAdmin):
     readonly_fields = ("created_at",)
     prepopulated_fields = {"slug": ("title",)}
     date_hierarchy = "created_at"
+@admin.register(Visit)
+class VisitAdmin(admin.ModelAdmin):
+    list_display = ("created_at", "path", "ip", "user")
+    search_fields = ("path", "ip", "user_agent", "referer")
+    list_filter = ("created_at",)
