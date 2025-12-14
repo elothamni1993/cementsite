@@ -10,7 +10,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Environment variables
 SECRET_KEY = os.environ.get("SECRET_KEY", "change_me")
 DEBUG = os.environ.get("DEBUG", "True") == "True"
-ALLOWED_HOSTS = [h for h in os.environ.get("ALLOWED_HOSTS","127.0.0.1,localhost,cementsite.onrender.com").split(",") if h]
+ALLOWED_HOSTS = [h for h in os.environ.get("ALLOWED_HOSTS","127.0.0.1,localhost,cementsite.onrender.com,cementexpert.com").split(",") if h]
 
 INSTALLED_APPS = [
     "django.contrib.admin",
