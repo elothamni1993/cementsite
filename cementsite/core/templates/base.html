@@ -1,10 +1,18 @@
 {% load static %}
 <!doctype html>
-<html lang="en">
+<html lang="{{ page_lang|default:'en' }}">
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>{% block title %}Cement Pro{% endblock %}</title>
+  <meta name="description" content="{{ meta_description|default:'Cement process & technology (EN/FR): practical guides, calculators, and premium training for plants and process engineers.' }}"/>
+  <meta property="og:site_name" content="Cement Expert"/>
+  <meta property="og:title" content="{{ meta_title|default:'Cement Pro' }}"/>
+  <meta property="og:description" content="{{ meta_description|default:'Cement process & technology (EN/FR): practical guides, calculators, and premium training for plants and process engineers.' }}"/>
+  <meta property="og:type" content="website"/>
+  {% if request.build_absolute_uri %}
+  <meta property="og:url" content="{{ request.build_absolute_uri }}"/>
+  {% endif %}
 
   {% block adsense_head %}
   {% if ADSENSE_CLIENT %}

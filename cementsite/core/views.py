@@ -4,8 +4,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.paginator import Paginator
-from django.http import HttpResponseForbidden
-from django.urls import reverse_lazy
+from django.http import HttpResponse, HttpResponseForbidden
+from django.urls import reverse, reverse_lazy
 from django.utils.timezone import now
 from django.views.generic import CreateView, UpdateView
 
@@ -66,6 +66,14 @@ def signup(request):
         return redirect("login")
     return render(request, "signup.html", {"form": form})
 
+
+
+# ---------- SEO helpers ----------
+
+def robots_txt(request):
+    sitemap_url = request.build_absolute_uri(reverse("sitemap"))
+    content = f"User-agent: *\nAllow: /\nSitemap: {sitemap_url}\n"
+    return HttpResponse(content, content_type="text/plain")
 @login_required
 def dashboard(request):
     sub = Subscription.objects.filter(user=request.user).first()
