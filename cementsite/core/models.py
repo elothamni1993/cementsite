@@ -86,6 +86,20 @@ class Visit(models.Model):
     user_agent = models.CharField(max_length=512, blank=True)
     referer = models.CharField(max_length=512, blank=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL)
+    
+    # Advanced tracking
+    session_key = models.CharField(max_length=40, blank=True, db_index=True)
+    is_returning = models.BooleanField(default=False)
+    time_spent = models.IntegerField(default=0, help_text="Seconds spent on previous page")
+    clicked_premium = models.BooleanField(default=False)
+    traffic_source = models.CharField(max_length=100, blank=True, help_text="google, direct, facebook, etc.")
+
+    class Meta:
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['created_at']),
+            models.Index(fields=['session_key', 'created_at']),
+        ]
 
     def __str__(self):
         return f"{self.ip} {self.path} {self.created_at:%Y-%m-%d %H:%M}"
