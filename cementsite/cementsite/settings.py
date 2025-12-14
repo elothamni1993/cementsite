@@ -1,9 +1,13 @@
 import os
 from pathlib import Path
+from urllib.parse import urlparse, parse_qsl
+from dotenv import load_dotenv
+
+load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Environment via os.environ only (simple starter); you can add python-dotenv later if you want.
+# Environment variables
 SECRET_KEY = os.environ.get("SECRET_KEY", "change_me")
 DEBUG = os.environ.get("DEBUG", "True") == "True"
 ALLOWED_HOSTS = [h for h in os.environ.get("ALLOWED_HOSTS","127.0.0.1,localhost,cementsite.onrender.com").split(",") if h]
@@ -55,26 +59,29 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "cementsite.wsgi.application"
 
-# Database: default to SQLite; switch to DATABASE_URL if provided
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
-}
-
+# Database: Neon Postgres via DATABASE_URL, fallback to SQLite
 _db_url = os.environ.get("DATABASE_URL")
 if _db_url:
-    try:
-        import dj_database_url
-        DATABASES["default"] = dj_database_url.parse(
-            _db_url,
-            conn_max_age=600,
-            ssl_require=True,
-        )
-    except Exception:
-        # Fall back to SQLite if parsing fails
-        pass
+    tmpPostgres = urlparse(_db_url)
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': tmpPostgres.path.replace('/', ''),
+            'USER': tmpPostgres.username,
+            'PASSWORD': tmpPostgres.password,
+            'HOST': tmpPostgres.hostname,
+            'PORT': 5432,
+            'OPTIONS': dict(parse_qsl(tmpPostgres.query)),
+        }
+    }
+else:
+    # Fallback to SQLite for local development
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
+    }
 
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",},
