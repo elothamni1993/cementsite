@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: cementsite
+    env: python
+    plan: free
+    buildCommand: "cd cementsite && pip install -r ../requirements.txt && python manage.py collectstatic --noinput"
+    startCommand: "cd cementsite && python manage.py migrate && gunicorn cementsite.wsgi:application --bind 0.0.0.0:10000"
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: cementsite.settings
+      - key: PYTHON_VERSION
+        value: 3.13.4
+# Set SECRET_KEY, DATABASE_URL, and any other env vars in the Render dashboard.
