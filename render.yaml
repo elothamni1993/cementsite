@@ -3,7 +3,7 @@ services:
     name: cementsite
     env: python
     plan: free
-    buildCommand: "cd cementsite && pip install -r ../requirements.txt && python manage.py collectstatic --noinput"
+    buildCommand: "cd cementsite && pip install -r ../requirements.txt && python manage.py collectstatic --noinput && python manage.py migrate"
     startCommand: "cd cementsite && python manage.py migrate && gunicorn cementsite.wsgi:application --bind 0.0.0.0:10000"
     envVars:
       - key: DJANGO_SETTINGS_MODULE
