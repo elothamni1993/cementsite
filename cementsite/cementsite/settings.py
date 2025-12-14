@@ -6,7 +6,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Environment via os.environ only (simple starter); you can add python-dotenv later if you want.
 SECRET_KEY = os.environ.get("SECRET_KEY", "change_me")
 DEBUG = os.environ.get("DEBUG", "True") == "True"
-ALLOWED_HOSTS = [h for h in os.environ.get("ALLOWED_HOSTS","127.0.0.1,localhost").split(",") if h]
+ALLOWED_HOSTS = [h for h in os.environ.get("ALLOWED_HOSTS","127.0.0.1,localhost,cementsite.onrender.com").split(",") if h]
 
 INSTALLED_APPS = [
     "django.contrib.admin",
